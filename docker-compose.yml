@@ -1,0 +1,92 @@
+version: '2'
+services:
+  acmesh:
+    image: neilpang/acme.sh
+    command: 'daemon'
+    environment:
+      GD_Key=GODADDY_KEY
+      GD_Secret=GODADDY_SECRET
+    container_name: acmesh
+    restart: always
+    volumes:
+      - '/opt/acmesh:/certs'
+      - '/opt/acmesh:/acme.sh'
+  acmeshexec:
+    image: docker:18-dind
+    command: 'docker exec acmesh --issue --dns dns_gd -d example.com -d *.example.com --key-file /certs/example.com.key --fullchain-file /certs/example.com.crt'
+    container_name: acmeshexec
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    depends_on:
+      - acmesh
+  3proxy:
+    image: grffio/3proxy:v0.1.2
+    environment:
+      PROXY_SECRET=user1:P@ssw0rd1,user2:P@ssw0rd2
+    container_name: 3proxy
+    restart: always
+    networks:
+      - 3proxy
+    ports:
+      - '1080:1080'
+  ocserv:
+    image: grffio/ocserv:v0.1.1
+    environment:
+      OC_CERT=example.com.crt
+      OC_KEY=example.com.key
+      OC_SECRET=user1:P@ssw0rd1,user2:P@ssw0rd2
+      OC_MAXCL=4
+      OC_MAXSCL=1
+    container_name: ocserv
+    restart: always
+    networks:
+      - ocserv
+    ports:
+      - '443:443/tcp'
+      - '443:443/udp'
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - '/opt/acmesh:/etc/ocserv/cert:ro'
+    depends_on:
+      - acmeshexec
+  openvpn_tcp:
+    image: grffio/openvpn:v0.1.1
+    environment:
+      OVPN_PROTO=tcp
+      OVPN_NETWORK=10.20.30.0
+      OVPN_MAXCL=4
+      OVPN_SERVERCN=example.com
+    container_name: openvpn_tcp
+    restart: always
+    networks:
+      - openvpn
+    ports:
+      - '1194:1194/tcp'
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - '/opt/openvpn:/etc/openvpn/certs'
+  openvpn_udp:
+    image: grffio/openvpn:v0.1.1
+    environment:
+      OVPN_PROTO=udp
+      OVPN_NETWORK=10.20.30.0
+      OVPN_MAXCL=4
+      OVPN_SERVERCN=example.com
+    container_name: openvpn_udp
+    restart: always
+    networks:
+      - openvpn
+    ports:
+      - '1194:1194/udp'
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - '/opt/openvpn:/etc/openvpn/certs:ro'
+    depends_on:
+      - openvpn_tcp
+networks:
+  3proxy:
+  ocserv:
+  openvpn:
