@@ -20,7 +20,7 @@ services:
     depends_on:
       - acmesh
   3proxy:
-    image: grffio/3proxy:v0.1.2
+    image: grffio/3proxy
     environment:
       PROXY_SECRET=user1:P@ssw0rd1,user2:P@ssw0rd2
     container_name: 3proxy
@@ -30,7 +30,7 @@ services:
     ports:
       - '1080:1080'
   ocserv:
-    image: grffio/ocserv:v0.1.1
+    image: grffio/ocserv
     environment:
       OC_CERT=example.com.crt
       OC_KEY=example.com.key
@@ -51,7 +51,7 @@ services:
     depends_on:
       - acmeshexec
   openvpn_tcp:
-    image: grffio/openvpn:v0.1.1
+    image: grffio/openvpn
     environment:
       OVPN_PROTO=tcp
       OVPN_NETWORK=10.20.30.0
@@ -68,7 +68,7 @@ services:
     volumes:
       - '/opt/openvpn:/etc/openvpn/certs'
   openvpn_udp:
-    image: grffio/openvpn:v0.1.1
+    image: grffio/openvpn
     environment:
       OVPN_PROTO=udp
       OVPN_NETWORK=10.20.30.0
