@@ -4,8 +4,8 @@ services:
     image: neilpang/acme.sh
     command: 'daemon'
     environment:
-      GD_Key=GODADDY_KEY
-      GD_Secret=GODADDY_SECRET
+      - GD_Key=GODADDY_KEY
+      - GD_Secret=GODADDY_SECRET
     container_name: acmesh
     restart: always
     volumes:
@@ -32,11 +32,11 @@ services:
   ocserv:
     image: grffio/ocserv
     environment:
-      OC_CERT=example.com.crt
-      OC_KEY=example.com.key
-      OC_SECRET=user1:P@ssw0rd1,user2:P@ssw0rd2
-      OC_MAXCL=4
-      OC_MAXSCL=1
+      - OC_CERT=example.com.crt
+      - OC_KEY=example.com.key
+      - OC_SECRET=user1:P@ssw0rd1,user2:P@ssw0rd2
+      - OC_MAXCL=4
+      - OC_MAXSCL=1
     container_name: ocserv
     restart: always
     networks:
@@ -53,10 +53,10 @@ services:
   openvpn_tcp:
     image: grffio/openvpn
     environment:
-      OVPN_PROTO=tcp
-      OVPN_NETWORK=10.20.30.0
-      OVPN_MAXCL=4
-      OVPN_SERVERCN=example.com
+      - OVPN_PROTO=tcp
+      - OVPN_NETWORK=10.20.30.0
+      - OVPN_MAXCL=4
+      - OVPN_SERVERCN=example.com
     container_name: openvpn_tcp
     restart: always
     networks:
@@ -70,10 +70,10 @@ services:
   openvpn_udp:
     image: grffio/openvpn
     environment:
-      OVPN_PROTO=udp
-      OVPN_NETWORK=10.20.30.0
-      OVPN_MAXCL=4
-      OVPN_SERVERCN=example.com
+      - OVPN_PROTO=udp
+      - OVPN_NETWORK=10.20.30.0
+      - OVPN_MAXCL=4
+      - OVPN_SERVERCN=example.com
     container_name: openvpn_udp
     restart: always
     networks:
